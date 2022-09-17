@@ -1,8 +1,8 @@
-import "../css/animation.css";
-import { RectInterface } from "../interface/painter.interface";
+import { FabricInterface } from '../interface/list-colors.interface';
+import '../css/animation.css';
 
-export const ListTableColors = (data: RectInterface) => {
-  const { setRectColor } = data;
+export const ListTableColors = (data: FabricInterface) => {
+  const { setFabricObjColor } = data;
 
   return (
     <>
@@ -19,7 +19,7 @@ export const ListTableColors = (data: RectInterface) => {
                 cursor: "pointer",
               }}
               onClick={(e: any) =>
-                setRectColor(e.target.innerHTML.toLowerCase())
+                setFabricObjColor(e.target.innerHTML.toLowerCase())
               }
             >
               Red
@@ -40,7 +40,7 @@ export const ListTableColors = (data: RectInterface) => {
                 cursor: "pointer",
               }}
               onClick={(e: any) =>
-                setRectColor(e.target.innerHTML.toLowerCase())
+                setFabricObjColor(e.target.innerHTML.toLowerCase())
               }
             >
               Green
@@ -54,7 +54,7 @@ export const ListTableColors = (data: RectInterface) => {
                 cursor: "pointer",
               }}
               onClick={(e: any) =>
-                setRectColor(e.target.innerHTML.toLowerCase())
+                setFabricObjColor(e.target.innerHTML.toLowerCase())
               }
             >
               Yellow
@@ -66,7 +66,7 @@ export const ListTableColors = (data: RectInterface) => {
                 cursor: "pointer",
               }}
               onClick={(e: any) =>
-                setRectColor(e.target.innerHTML.toLowerCase())
+                setFabricObjColor(e.target.innerHTML.toLowerCase())
               }
             >
               Black
@@ -78,7 +78,7 @@ export const ListTableColors = (data: RectInterface) => {
                 cursor: "pointer",
               }}
               onClick={(e: any) =>
-                setRectColor(e.target.innerHTML.toLowerCase())
+                setFabricObjColor(e.target.innerHTML.toLowerCase())
               }
             >
               Gray

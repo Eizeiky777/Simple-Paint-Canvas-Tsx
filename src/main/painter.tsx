@@ -3,6 +3,7 @@ import { ListTableColors } from "../component/list-colors";
 import { useEffect, useState } from "react";
 
 import "../css/animation.css";
+import { ListButtons } from "../component/shape-button";
 
 const sampleImgUrl1 =
   "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2076&q=80";
@@ -12,8 +13,9 @@ export const Painters = () => {
   const [imgURL, setImgURL] = useState("");
   const [draw, setDrawing] = useState(true);
 
-  const [rect, setRect] = useState(new fabric.Rect({}));
-  const [rectColor, setRectColor] = useState("");
+  const [fabricObj, setFabricObj] = useState(new fabric.Object({}));
+  const [fabricObjColor, setFabricObjColor] = useState("");
+  const [fabricText, setFabricText] = useState(new fabric.Text(""));
 
   useEffect(() => {
     setCanvas(initCanvas());
@@ -48,7 +50,7 @@ export const Painters = () => {
     canvi.add(shape);
     canvi.renderAll();
 
-    setRect(shape);
+    setFabricObj(shape);
   };
 
   const addCircle = (canvi: fabric.Canvas): void => {
@@ -61,6 +63,8 @@ export const Painters = () => {
 
     canvi.add(shape);
     canvi.renderAll();
+
+    setFabricObj(shape);
   };
 
   const addTriangle = (canvi: fabric.Canvas): void => {
@@ -74,6 +78,8 @@ export const Painters = () => {
 
     canvi.add(shape);
     canvi.renderAll();
+
+    setFabricObj(shape);
   };
 
   const addLine = (canvi: fabric.Canvas): void => {
@@ -85,20 +91,21 @@ export const Painters = () => {
 
     canvi.add(shape);
     canvi.renderAll();
+
+    setFabricObj(shape);
   };
 
-  const deleteRect = (canvi: fabric.Canvas, shape: fabric.Rect): void => {
+  const deleteFabricObj = (
+    canvi: fabric.Canvas,
+    shape: fabric.Object
+  ): void => {
     canvi.remove(shape);
     canvi.renderAll();
   };
 
-  const addImg = (
-    e: React.FormEvent<HTMLFormElement>,
-    url: string,
-    canvi: fabric.Canvas
-  ): void => {
+  const addImg = (e: any, imageUrl: any, canvi: fabric.Canvas): void => {
     e.preventDefault();
-    fabric.Image.fromURL(url, (img: fabric.Image) => {
+    fabric.Image.fromURL(imageUrl, (img: fabric.Image) => {
       img.scale(0.75);
       canvi.add(img);
       canvi.renderAll();
@@ -112,14 +119,26 @@ export const Painters = () => {
     setDrawing(!isDrawing);
   };
 
-  const changeColorRect = (
+  const changeColorFabricObj = (
     canvi: fabric.Canvas,
-    shape: fabric.Rect,
+    shape: fabric.Object,
     newColor: string
   ) => {
     shape.set("fill", newColor);
     canvi.add(shape);
     canvi.renderAll();
+  };
+
+  const insertText = (
+    e: React.ChangeEvent<any>,
+    fabricText: fabric.Text,
+    canvi: fabric.Canvas
+  ) => {
+    fabricText.text = e.target.value;
+    fabricText.setOptions({ left: 100, top: 100 });
+    canvi.add(fabricText);
+    canvi.renderAll();
+    setFabricText(fabricText);
   };
 
   console.log("RerenderChecking");
@@ -140,50 +159,16 @@ export const Painters = () => {
               marginTop: "5px",
             }}
           >
+            <ListButtons
+              addRectangle={addRectangle}
+              addTriangle={addTriangle}
+              addCircle={addCircle}
+              addLine={addLine}
+              canvas={canvas}
+            />
+
             <button
-              onClick={() => addRectangle(canvas)}
-              style={{
-                width: 100,
-                height: 30,
-                fontFamily: "Roboto, sans-serif",
-                fontWeight: "normal",
-                backgroundColor: "yellow",
-                cursor: "pointer",
-                borderColor: "yellow",
-              }}
-            >
-              Rectangle
-            </button>
-            <button
-              onClick={() => addTriangle(canvas)}
-              style={{
-                width: 100,
-                height: 30,
-                fontFamily: "Roboto, sans-serif",
-                fontWeight: "normal",
-                backgroundColor: "orange",
-                cursor: "pointer",
-                borderColor: "orange",
-              }}
-            >
-              Triangle
-            </button>
-            <button
-              onClick={() => addCircle(canvas)}
-              style={{
-                width: 100,
-                height: 30,
-                fontFamily: "Roboto, sans-serif",
-                fontWeight: "normal",
-                backgroundColor: "lightblue",
-                cursor: "pointer",
-                borderColor: "lightblue",
-              }}
-            >
-              Circle
-            </button>
-            <button
-              onClick={() => deleteRect(canvas, rect)}
+              onClick={() => deleteFabricObj(canvas, fabricObj)}
               style={{
                 width: 100,
                 height: 30,
@@ -196,28 +181,40 @@ export const Painters = () => {
             >
               Delete
             </button>
-            <form onSubmit={(e) => addImg(e, imgURL, canvas)}>
-              <div>
-                <input
-                  type="text"
-                  value={imgURL}
-                  placeholder="please input your url image :)"
-                  onChange={(e) => setImgURL(e.target.value)}
-                  style={{ width: 250, height: 23, marginRight: "5px" }}
-                />
-                <button
-                  style={{
-                    width: 100,
-                    height: 30,
-                    fontFamily: "Roboto, sans-serif",
-                  }}
-                  type="submit"
-                >
-                  Add Image
-                </button>
-              </div>
-            </form>
           </div>
+          <form onSubmit={(e) => addImg(e, imgURL, canvas)}>
+            <div>
+              <input
+                type="file"
+                placeholder="please input your url image :)"
+                onChange={(e: any) => {
+                  const fileImg = e.target.files[0];
+                  var reader = new FileReader();
+                  reader.onload = function () {
+                    const url: any = reader.result;
+                    setImgURL(url);
+                  };
+                  reader.readAsDataURL(fileImg);
+                }}
+                style={{
+                  width: 250,
+                  height: 23,
+                  marginTop: 20,
+                  marginBottom: 10,
+                }}
+              />
+              <button
+                style={{
+                  width: 100,
+                  height: 25,
+                  fontFamily: "Roboto, sans-serif",
+                }}
+                type="submit"
+              >
+                Add Image
+              </button>
+            </div>
+          </form>
         </div>
         <div>
           <button
@@ -236,7 +233,9 @@ export const Painters = () => {
             Free Drawing
           </button>
           <button
-            onClick={() => changeColorRect(canvas, rect, rectColor)}
+            onClick={() =>
+              changeColorFabricObj(canvas, fabricObj, fabricObjColor)
+            }
             style={{
               width: 140,
               height: 30,
@@ -250,24 +249,31 @@ export const Painters = () => {
           >
             Change Colour
           </button>
-          <ListTableColors setRectColor={setRectColor} />
+          <ListTableColors setFabricObjColor={setFabricObjColor} />
 
-          <button
-            onClick={() => addLine(canvas)}
+          <p
             style={{
-              width: 100,
-              height: 30,
+              width: 200,
+              height: 15,
               fontFamily: "Roboto, sans-serif",
               fontWeight: "normal",
-              backgroundColor: "lightcyan",
-              borderColor: "lightcyan",
-              cursor: "pointer",
+              fontSize: 15,
               marginLeft: "5px",
-              marginTop: "15px",
+              padding: 0
             }}
           >
-            Draw Line
-          </button>
+            Write Your Custom Text!
+          </p>
+          <input
+            style={{
+              width: 200,
+              height: 15,
+              fontFamily: "Roboto, sans-serif",
+              fontWeight: "normal",
+              marginLeft: "5px",
+            }}
+            onChange={(e) => insertText(e, fabricText, canvas)}
+          />
         </div>
       </div>
     </>
