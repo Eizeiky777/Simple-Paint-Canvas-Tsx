@@ -1,12 +1,12 @@
-import { FabricInterface } from '../interface/list-colors.interface';
-import '../css/animation.css';
+import { FabricInterface } from "../interface/list-colors.interface";
+import "../css/animation.css";
 
 export const ListTableColors = (data: FabricInterface) => {
   const { setFabricObjColor } = data;
 
   return (
     <>
-      <table style={{ width: "250px", marginTop: 10 }}>
+      <table style={{ width: "250px", marginLeft: 4 }}>
         <tbody>
           <tr>
             <th colSpan={3}> </th>
@@ -82,6 +82,44 @@ export const ListTableColors = (data: FabricInterface) => {
               }
             >
               Gray
+            </td>
+          </tr>
+          <tr>
+            <td
+              style={{
+                backgroundColor: "pink",
+                color: "rgba(0, 0, 0, 0)",
+                cursor: "pointer",
+              }}
+              onClick={(e: any) =>
+                setFabricObjColor(e.target.innerHTML.toLowerCase())
+              }
+            >
+              Pink
+            </td>
+            <td
+              style={{
+                backgroundColor: "olive",
+                color: "rgba(0, 0, 0, 0)",
+                cursor: "pointer",
+              }}
+              onClick={(e: any) =>
+                setFabricObjColor(e.target.innerHTML.toLowerCase())
+              }
+            >
+              Olive
+            </td>
+            <td
+              style={{
+                backgroundColor: "cyan",
+                color: "rgba(0, 0, 0, 0)",
+                cursor: "pointer",
+              }}
+              onClick={(e: any) =>
+                setFabricObjColor(e.target.innerHTML.toLowerCase())
+              }
+            >
+              Cyan
             </td>
           </tr>
         </tbody>

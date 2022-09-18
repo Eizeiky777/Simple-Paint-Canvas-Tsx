@@ -2,7 +2,15 @@ import { ShapeButtonInterface } from "../interface/shape-button.interface";
 import "../css/animation.css";
 
 export const ListButtons = (data: ShapeButtonInterface) => {
-  const { addRectangle, addTriangle, addCircle, addLine, canvas } = data;
+  const {
+    addRectangle,
+    addTriangle,
+    addCircle,
+    addLine,
+    deleteFabricObj,
+    canvas,
+    fabricObj,
+  } = data;
 
   return (
     <>
@@ -61,6 +69,20 @@ export const ListButtons = (data: ShapeButtonInterface) => {
         }}
       >
         Draw Line
+      </button>
+      <button
+        onClick={() => deleteFabricObj(canvas, fabricObj)}
+        style={{
+          width: 100,
+          height: 30,
+          fontFamily: "Roboto, sans-serif",
+          fontWeight: "normal",
+          backgroundColor: "red",
+          cursor: "pointer",
+          borderColor: "red",
+        }}
+      >
+        Delete
       </button>
     </>
   );

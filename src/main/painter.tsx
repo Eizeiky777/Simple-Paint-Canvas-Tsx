@@ -25,15 +25,9 @@ export const Painters = () => {
     const cvs = new fabric.Canvas("canvas", {
       height: 800,
       width: 800,
-      backgroundColor: "pink",
+      backgroundImage: sampleImgUrl1,
       isDrawingMode: false,
       freeDrawingCursor: "crosshair",
-    });
-
-    fabric.Image.fromURL(sampleImgUrl1, (img: fabric.Image) => {
-      img.scale(0.75);
-      cvs.add(img);
-      cvs.renderAll();
     });
 
     setCanvas(cvs);
@@ -141,7 +135,67 @@ export const Painters = () => {
     setFabricText(fabricText);
   };
 
-  console.log("RerenderChecking");
+  const onEventManualDrawing = (canvi: fabric.Canvas) => {
+    var rect = new fabric.Rect({});
+
+    var isDown = true;
+    var origX = 0;
+    var origY = 0;
+
+    removeEvents();
+
+    canvi.on("mouse:down", function (o) {
+      var pointer = canvi.getPointer(o.e);
+
+      origX = pointer.x;
+      origY = pointer.y;
+
+      rect.left = origX;
+      rect.top = origY;
+      rect.originX = "left";
+      rect.originY = "top";
+      rect.width = pointer.x - origX;
+      rect.height = pointer.y - origY;
+      rect.angle = 0;
+      rect.fill = "rgba(255,0,0,0.5)";
+      rect.transparentCorners = false;
+
+      canvi.add(rect);
+
+      isDown = true;
+    });
+
+    canvi.on("mouse:move", function (o) {
+      if (!isDown) {
+        return;
+      } else {
+        var pointer = canvi.getPointer(o.e);
+
+        if (origX > pointer.x) {
+          rect.left = Math.abs(pointer.x);
+        }
+        if (origY > pointer.y) {
+          rect.left = Math.abs(pointer.y);
+        }
+
+        rect.width = Math.abs(origX - pointer.x);
+        rect.height = Math.abs(origY - pointer.y);
+
+        canvi.renderAll();
+        setFabricObj(rect);
+      }
+    });
+
+    canvi.on("mouse:up", function (o) {
+      isDown = false;
+    });
+  };
+
+  const removeEvents = () => {
+    canvas.off("mouse:down");
+    canvas.off("mouse:up");
+    canvas.off("mouse:move");
+  };
 
   return (
     <>
@@ -164,23 +218,10 @@ export const Painters = () => {
               addTriangle={addTriangle}
               addCircle={addCircle}
               addLine={addLine}
+              deleteFabricObj={deleteFabricObj}
               canvas={canvas}
+              fabricObj={fabricObj}
             />
-
-            <button
-              onClick={() => deleteFabricObj(canvas, fabricObj)}
-              style={{
-                width: 100,
-                height: 30,
-                fontFamily: "Roboto, sans-serif",
-                fontWeight: "normal",
-                backgroundColor: "red",
-                cursor: "pointer",
-                borderColor: "red",
-              }}
-            >
-              Delete
-            </button>
           </div>
           <form onSubmit={(e) => addImg(e, imgURL, canvas)}>
             <div>
@@ -215,29 +256,52 @@ export const Painters = () => {
               </button>
             </div>
           </form>
-        </div>
-        <div>
           <button
-            onClick={() => startDrawing(canvas, draw)}
+            onClick={() => window.location.reload()}
             style={{
               width: 100,
               height: 30,
               fontFamily: "Roboto, sans-serif",
               fontWeight: "normal",
+              cursor: "pointer",
+            }}
+          >
+            Reset
+          </button>
+        </div>
+        <div>
+          <h5
+            style={{
+              fontFamily: "Roboto, sans-serif",
+              fontWeight: "bold",
+              margin: 5,
+              marginLeft: 5,
+            }}
+          >
+            Pick drawing style:
+          </h5>
+
+          <button
+            onClick={() => startDrawing(canvas, draw)}
+            style={{
+              width: 220,
+              height: 30,
+              fontFamily: "Roboto, sans-serif",
+              fontWeight: "normal",
               backgroundColor: "lightcyan",
               borderColor: "lightcyan",
               cursor: "pointer",
-              marginLeft: "5px",
+              marginLeft: 5,
+              marginTop: 10,
             }}
           >
-            Free Drawing
+            OnClick: OnEventDrawing
           </button>
+
           <button
-            onClick={() =>
-              changeColorFabricObj(canvas, fabricObj, fabricObjColor)
-            }
+            onDoubleClickCapture={() => onEventManualDrawing(canvas)}
             style={{
-              width: 140,
+              width: 220,
               height: 30,
               fontFamily: "Roboto, sans-serif",
               fontWeight: "normal",
@@ -245,31 +309,63 @@ export const Painters = () => {
               borderColor: "lightcyan",
               cursor: "pointer",
               marginLeft: "5px",
+              marginTop: 5,
             }}
           >
-            Change Colour
+            DoubleClick: OnEventDrawing
           </button>
-          <ListTableColors setFabricObjColor={setFabricObjColor} />
 
-          <p
+          <h5
+            style={{
+              fontFamily: "Roboto, sans-serif",
+              fontWeight: "bold",
+              margin: 5,
+              marginLeft: 5,
+              marginTop: 40,
+            }}
+          >
+            Pick the colors first :
+          </h5>
+          <ListTableColors setFabricObjColor={setFabricObjColor} />
+          <button
+            onClick={() =>
+              changeColorFabricObj(canvas, fabricObj, fabricObjColor)
+            }
+            style={{
+              width: 120,
+              height: 30,
+              fontFamily: "Roboto, sans-serif",
+              fontWeight: "normal",
+              backgroundColor: "lightcyan",
+              borderColor: "lightcyan",
+              cursor: "pointer",
+              marginLeft: "5px",
+              marginTop: 5,
+            }}
+          >
+            Change
+          </button>
+
+          <h5
             style={{
               width: 200,
               height: 15,
               fontFamily: "Roboto, sans-serif",
-              fontWeight: "normal",
-              fontSize: 15,
-              marginLeft: "5px",
-              padding: 0
+              fontWeight: "bold",
+              margin: 5,
+              marginLeft: 5,
+              marginTop: 50,
+              padding: 0,
             }}
           >
-            Write Your Custom Text!
-          </p>
+            Write your custom text here:
+          </h5>
           <input
             style={{
               width: 200,
               height: 15,
               fontFamily: "Roboto, sans-serif",
-              fontWeight: "normal",
+              fontWeight: "bold",
               marginLeft: "5px",
             }}
             onChange={(e) => insertText(e, fabricText, canvas)}
